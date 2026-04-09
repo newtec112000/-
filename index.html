@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>رصيد الإجازات</title>
+  <style>
+    body { font-family: Tahoma; text-align: center; margin-top: 50px; }
+    input, button { padding: 10px; margin: 10px; }
+    #result { margin-top: 20px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h2>استعلام عن رصيد الإجازات</h2>
+  <input type="text" id="empId" placeholder="أدخل رقمك الوظيفي">
+  <button onclick="checkLeave()">عرض الرصيد</button>
+  <div id="result"></div>
+
+  <script>
+    // لينك الشيت بصيغة CSV
+    const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRbMcoHT8eRuD2cEKlm-Tj8oY0pudnVSTztVc_UEfXCtKCoZ4CBrtyTF81kemcC9w/pub?output=csv";
+
+    async function checkLeave() {
+      const id = document.getElementById("empId").value.trim();
+      const response = await fetch(sheetUrl);
+      const text = await response.text();
+      const rows = text.split("\n").map(r => r.split(","));
+
+      let found = false;
+      for (let i = 1; i < rows.length; i++) {
+        // العمود B = index 1
+        if (rows[i][1] === id) {
+          // العمود C = index 2 (الاسم)
+          const name = rows[i][2];
+          // العمود I = index 8 (المستنفذ)
+          const used = rows[i][8];
+          // العمود N = index 13 (المتبقي)
+          const remaining = rows[i][13];
+
+          document.getElementById("result").innerText =
+            `الاسم: ${name} | المستنفذ: ${used} يوم | المتبقي: ${remaining} يوم`;
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        document.getElementById("result").innerText = "رقم وظيفي غير موجود!";
+      }
+    }
+  </script>
+</body>
+</html>
