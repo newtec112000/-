@@ -82,18 +82,20 @@
   <script>
     async function searchEmployee() {
       const empId = document.getElementById("empId").value.trim();
-      const url = "لينك_CSV_من_Google_Sheets"; // ضع هنا لينك الشيت
+      const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRbMcoHT8eRuD2cEKlm-Tj8oYopudnVSItzVc_UEfXCtKCoZ4CBrtyTF81kemcC9w/pub?output=csv";
 
       const response = await fetch(url);
       const data = await response.text();
       const rows = data.split("\n").map(r => r.split(","));
 
-      const found = rows.find(r => r[1] === empId); // العمود B فيه الرقم الوظيفي
+      // البحث في العمود الأول (A) اللي فيه الرقم الوظيفي
+      const found = rows.find(r => r[0].trim() === empId);
+
       if (found) {
         document.getElementById("resultTable").style.display = "table";
         document.getElementById("resultBody").innerHTML = `
           <tr>
-            <td>${found[0]}</td>
+            <td>${found[1]}</td>
             <td>${found[2]}</td>
             <td>${found[3]}</td>
           </tr>
